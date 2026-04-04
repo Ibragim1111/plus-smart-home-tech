@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: collector
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    schema-registry-url: http://localhost:8081
+    topics:
+      sensors: telemetry.sensors.v1
+      hubs: telemetry.hubs.v1
+
+    producer:
+      properties:
+        schema.registry.url: ${spring.kafka.schema-registry-url}
+
+logging:
+  level:
+    ru.yandex.practicum: DEBUG
+    org.springframework.kafka: INFO
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
