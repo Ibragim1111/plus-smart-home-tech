@@ -21,6 +21,7 @@ import java.util.Map;
 @EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfig {
 
+
     private final KafkaProperties kafkaProperties;
 
     // ⭐ Создаем сериализатор для SensorEventAvro с указанием типа
