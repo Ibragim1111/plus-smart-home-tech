@@ -4,7 +4,7 @@ import com.google.protobuf.Timestamp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.config.EventProducer;
+import ru.yandex.practicum.config.collector.EventProducer;
 import ru.yandex.practicum.grpc.telemetry.collector.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
