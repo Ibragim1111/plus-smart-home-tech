@@ -5,8 +5,11 @@ package telemetry.messages;
 option java_package = "ru.yandex.practicum.grpc.telemetry.collector";
 option java_multiple_files = true;
 
+import "telemetry/services/hub_router_controller.proto";
 import "google/protobuf/timestamp.proto";
+
 // Типы устройств
+// Типы устройств (полностью соответствует DeviceTypeAvro)
 enum DeviceTypeProto {
   MOTION_SENSOR = 0;
   TEMPERATURE_SENSOR = 1;
@@ -15,7 +18,7 @@ enum DeviceTypeProto {
   SWITCH_SENSOR = 4;
 }
 
-// Типы условий
+// Типы условий (полностью соответствует ConditionTypeAvro)
 enum ConditionTypeProto {
   MOTION = 0;
   LUMINOSITY = 1;
@@ -25,25 +28,17 @@ enum ConditionTypeProto {
   HUMIDITY = 5;
 }
 
-// Операции сравнения
+// Операции сравнения (полностью соответствует ConditionOperationAvro)
 enum ConditionOperationProto {
   EQUALS = 0;
   GREATER_THAN = 1;
   LOWER_THAN = 2;
 }
 
-// Типы действий
-enum ActionTypeProto {
-  ACTIVATE = 0;
-  DEACTIVATE = 1;
-  INVERSE = 2;
-  SET_VALUE = 3;
-}
-
 // Событие: добавление устройства
 message DeviceAddedEventProto {
   string id = 1;
-  DeviceTypeProto device_type = 2;
+  DeviceTypeProto type = 2;  // переименовал с device_type на type как в Avro
 }
 
 // Событие: удаление устройства
@@ -51,26 +46,19 @@ message DeviceRemovedEventProto {
   string id = 1;
 }
 
-// Условие сценария
+// Условие сценария (теперь с union типами для value)
 message ScenarioConditionProto {
-  string sensor_id = 1;
-  ConditionTypeProto type = 2;
-  ConditionOperationProto operation = 3;
-  int32 value = 4;
-}
-
-// Действие устройства
-message DeviceActionProto {
-  string sensor_id = 1;
-  ActionTypeProto type = 2;
-  optional int32 value = 3;
+  string sensor_id = 1 [json_name = "sensor_id"];
+  ConditionTypeProto type = 2 [json_name = "type"];
+  ConditionOperationProto operation = 3 [json_name = "operation"];
+  optional int32 value = 4 [json_name = "value"];
 }
 
 // Событие: добавление сценария
 message ScenarioAddedEventProto {
   string name = 1;
   repeated ScenarioConditionProto conditions = 2;
-  repeated DeviceActionProto actions = 3;
+  repeated telemetry.service.hubrouter.DeviceActionProto actions = 3;
 }
 
 // Событие: удаление сценария
@@ -90,3 +78,4 @@ message HubEventProto {
     ScenarioRemovedEventProto scenario_removed = 6;
   }
 }
+

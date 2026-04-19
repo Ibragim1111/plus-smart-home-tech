@@ -1,8 +1,6 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol HubEventProtocol {
-
-    // Типы устройств
-    enum DeviceTypeAvro {
+enum DeviceTypeAvro {
         MOTION_SENSOR,
         TEMPERATURE_SENSOR,
         LIGHT_SENSOR,
@@ -10,7 +8,6 @@ protocol HubEventProtocol {
         SWITCH_SENSOR
     }
 
-    // Типы условий
     enum ConditionTypeAvro {
         MOTION,
         LUMINOSITY,
@@ -20,14 +17,12 @@ protocol HubEventProtocol {
         HUMIDITY
     }
 
-    // Операции сравнения
     enum ConditionOperationAvro {
         EQUALS,
         GREATER_THAN,
         LOWER_THAN
     }
 
-    // Типы действий
     enum ActionTypeAvro {
         ACTIVATE,
         DEACTIVATE,
@@ -35,54 +30,46 @@ protocol HubEventProtocol {
         SET_VALUE
     }
 
-    // Условие сценария
-    record ScenarioConditionAvro {
-        string sensorId;
-        ConditionTypeAvro type;
-        ConditionOperationAvro operation;
-        int value;
+    record DeviceAddedEventAvro {
+        string id;
+        DeviceTypeAvro type;
     }
 
-    // Действие устройства
+    record DeviceRemovedEventAvro {
+        string id;
+    }
+
+    record ScenarioConditionAvro {
+        string sensor_id;
+        ConditionTypeAvro type;
+        ConditionOperationAvro operation;
+        union { null, int, boolean } value = null;
+    }
+
     record DeviceActionAvro {
-        string sensorId;
+        string sensor_id;
         ActionTypeAvro type;
         union { null, int } value = null;
     }
 
-    // Событие: добавление устройства
-    record DeviceAddedAvro {
-        string id;
-        DeviceTypeAvro deviceType;
-    }
-
-    // Событие: удаление устройства
-    record DeviceRemovedAvro {
-        string id;
-    }
-
-    // Событие: добавление сценария
-    record ScenarioAddedAvro {
+    record ScenarioAddedEventAvro {
         string name;
         array<ScenarioConditionAvro> conditions;
         array<DeviceActionAvro> actions;
     }
 
-    // Событие: удаление сценария
-    record ScenarioRemovedAvro {
+    record ScenarioRemovedEventAvro {
         string name;
     }
 
-    // Главное событие хаба
     record HubEventAvro {
-        string hubId;
-        long timestamp;  // timestamp-millis будет добавлено отдельно
+        string hub_id;
+        @logicalType("timestamp-millis") long timestamp;
         union {
-            null,
-            DeviceAddedAvro,
-            DeviceRemovedAvro,
-            ScenarioAddedAvro,
-            ScenarioRemovedAvro
+            DeviceAddedEventAvro,
+            DeviceRemovedEventAvro,
+            ScenarioAddedEventAvro,
+            ScenarioRemovedEventAvro
         } payload;
     }
 }

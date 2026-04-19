@@ -46,9 +46,9 @@ public class EventController extends CollectorControllerGrpc.CollectorController
     public void collectHubEvent(HubEventProto request,
                                 io.grpc.stub.StreamObserver<Empty> responseObserver) {
         try {
-            log.info("Received hub event via gRPC: hubId={}, type={}",
-                    request.getHubId(), request.getPayloadCase());
 
+            log.debug("Mapping condition: value={}",
+                    request.getScenarioAdded().getConditions(0).getValue());
             hubEventService.processEvent(request);
 
             responseObserver.onNext(Empty.getDefaultInstance());

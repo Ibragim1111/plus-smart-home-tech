@@ -2,7 +2,7 @@ package ru.yandex.practicum.producer;
 
 import com.google.protobuf.Timestamp;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.collector.EventProducer;
 import ru.yandex.practicum.grpc.telemetry.collector.SensorEventProto;
@@ -12,7 +12,7 @@ import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
+
 public class SensorEventProducer {
 
     private final EventProducer eventProducer;

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package telemetry.service.hubrouter;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_package = "ru.yandex.practicum.grpc.telemetry.hubrouter";
+option java_multiple_files = true;  // ← каждый message в своем файле
+
+// Типы действий (если нет в hub_event.proto)
+enum ActionTypeProto {
+  ACTIVATE = 0;
+  DEACTIVATE = 1;
+  INVERSE = 2;
+  SET_VALUE = 3;
+}
+
+// Действие устройства
+message DeviceActionProto {
+  string sensor_id = 1;
+  ActionTypeProto type = 2;
+  optional int32 value = 3;
+}
+// Сообщение для запроса действия
+message DeviceActionRequest {
+  string hub_id = 1;
+  string scenario_name = 2;
+  DeviceActionProto action = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+// Сервис Hub Router
+service HubRouterController {
+  rpc HandleDeviceAction (DeviceActionRequest) returns (google.protobuf.Empty);
+}
