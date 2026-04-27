@@ -8,8 +8,9 @@ import ru.yandex.practicum.exception.InvalidScenarioConditionValueException;
 import ru.yandex.practicum.grpc.telemetry.collector.ConditionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.collector.HubEventProto;
 import ru.yandex.practicum.grpc.telemetry.collector.ScenarioConditionProto;
+import ru.yandex.practicum.grpc.telemetry.hubrouter.DeviceActionProto;
 import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.model.hub.ConditionType;
+
 
 import java.time.Instant;
 import java.util.List;
@@ -60,6 +61,13 @@ public class HubEventProducer {
                 log.info("=== SCENARIO_ADDED DEBUG ===");
                 log.info("Name: {}", proto.getScenarioAdded().getName());
 
+                log.info("Conditions count: {}", proto.getScenarioAdded().getConditionsList().size());
+                for (int i = 0; i < proto.getScenarioAdded().getConditionsList().size(); i++) {
+                    var cond = proto.getScenarioAdded().getConditionsList().get(i);
+                    log.info("Condition {}: sensorId={}, type={}, operation={}, value={}",
+                            i, cond.getSensorId(), cond.getType(), cond.getOperation(),
+                            cond.hasValue() ? cond.getValue() : "null");
+                }
                 // Проверяем actions
                 log.info("Actions count: {}", proto.getScenarioAdded().getActionsList().size());
                 for (int i = 0; i < proto.getScenarioAdded().getActionsList().size(); i++) {
@@ -102,7 +110,7 @@ public class HubEventProducer {
         return builder.build();
     }
 
-    private ScenarioConditionAvro mapCondition(ru.yandex.practicum.grpc.telemetry.collector.ScenarioConditionProto condition) {
+    private ScenarioConditionAvro mapCondition(ScenarioConditionProto condition) {
         // Логируем полученное значение для отладки
         log.debug("Mapping condition: sensorId={}, type={}, operation={}, valueCase={}",
                 condition.getSensorId(),
@@ -113,35 +121,20 @@ public class HubEventProducer {
         ScenarioConditionAvro.Builder builder = ScenarioConditionAvro.newBuilder()
                 .setSensorId(condition.getSensorId())
                 .setType(ConditionTypeAvro.valueOf(condition.getType().name()))
-                .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name()))
-                .setValue(mapConditionValue(condition));
+                .setOperation(ConditionOperationAvro.valueOf(condition.getOperation().name()));
 
-        // Определяем тип значения и устанавливаем
-            /*
-        switch (condition.getValueCase()) {
-            case INT_VALUE:
-                int intVal = condition.getIntValue();
-                log.info("Setting INT value: {}", intVal);
-                builder.setValue(intVal);
-                break;
-            case BOOL_VALUE:
-                boolean boolVal = condition.getBoolValue();
-                log.info("Setting BOOL value: {}", boolVal);
-                builder.setValue(boolVal);
-                break;
-            case VALUE_NOT_SET:
-                log.warn("VALUE_NOT_SET - value is null");
-                builder.setValue(null);
-                break;
+
+        if (condition.hasValue()) {
+            builder.setValue(mapConditionValue(condition));
+        }else {
+            builder.setValue(null); // ЯВНО устанавливаем null
         }
-        */
-
 
         return builder.build();
     }
 
 
-    private DeviceActionAvro mapAction(ru.yandex.practicum.grpc.telemetry.hubrouter.DeviceActionProto action) {
+    private DeviceActionAvro mapAction(DeviceActionProto action) {
         DeviceActionAvro.Builder builder = DeviceActionAvro.newBuilder()
                 .setSensorId(action.getSensorId())
                 .setType(ActionTypeAvro.valueOf(action.getType().name()));
@@ -163,9 +156,7 @@ public class HubEventProducer {
     }
     private Object mapConditionValue(ScenarioConditionProto condition) {
 
-        if (!condition.hasValue()) {
-            return null;
-        }
+
         if (condition.getType() == ConditionTypeProto.MOTION|| condition.getType() == ConditionTypeProto.SWITCH) {
             // Hub Router sends scenario values as integers in JSON, but the Avro contract for
             // boolean-like conditions is boolean. We translate 0/1 explicitly to preserve intent.

@@ -47,8 +47,6 @@ public class EventController extends CollectorControllerGrpc.CollectorController
                                 io.grpc.stub.StreamObserver<Empty> responseObserver) {
         try {
 
-            log.debug("Mapping condition: value={}",
-                    request.getScenarioAdded().getConditions(0).getValue());
             hubEventService.processEvent(request);
 
             responseObserver.onNext(Empty.getDefaultInstance());
