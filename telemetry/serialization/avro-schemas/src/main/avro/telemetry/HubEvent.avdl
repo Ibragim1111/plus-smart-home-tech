@@ -39,18 +39,18 @@ enum DeviceTypeAvro {
         string id;
     }
 
-    record ScenarioConditionAvro {
-        string sensor_id;
-        ConditionTypeAvro type;
-        ConditionOperationAvro operation;
-        union { null, int, boolean } value = null;
-    }
+record ScenarioConditionAvro {
+    string sensorId;         // ✅ было sensor_id
+    ConditionTypeAvro type;
+    ConditionOperationAvro operation;
+    union { null, int, boolean } value = null;
+}
 
-    record DeviceActionAvro {
-        string sensor_id;
-        ActionTypeAvro type;
-        union { null, int } value = null;
-    }
+record DeviceActionAvro {
+    string sensorId;         // ✅ было sensor_id
+    ActionTypeAvro type;
+    union { null, int } value = null;
+}
 
     record ScenarioAddedEventAvro {
         string name;
@@ -63,8 +63,8 @@ enum DeviceTypeAvro {
     }
 
     record HubEventAvro {
-        string hub_id;
-        @logicalType("timestamp-millis") long timestamp;
+        string hubId;
+        timestamp_ms timestampMs;
         union {
             DeviceAddedEventAvro,
             DeviceRemovedEventAvro,

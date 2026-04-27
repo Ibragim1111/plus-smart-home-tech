@@ -22,23 +22,20 @@ record ClimateSensorAvro {
     }
 
     record TemperatureSensorAvro {
-        string id;
-        string hubId;
-        @logicalType("timestamp-millis") long timestamp;
         int temperature_c;
         int temperature_f;
     }
 
-    record SensorEventAvro {
-        string id;
-        string hubId;
-        @logicalType("timestamp-millis") long timestamp;
-        union {
-            ClimateSensorAvro,
-            LightSensorAvro,
-            MotionSensorAvro,
-            SwitchSensorAvro,
-            TemperatureSensorAvro
-        } payload;
-    }
+record SensorEventAvro {
+    string id;
+    string hubId;
+    timestamp_ms timestampMs;        // ✅ было timestamp_ms
+    union {
+        ClimateSensorAvro,
+        LightSensorAvro,
+        MotionSensorAvro,
+        SwitchSensorAvro,
+        TemperatureSensorAvro
+    } payload;
+}
 }

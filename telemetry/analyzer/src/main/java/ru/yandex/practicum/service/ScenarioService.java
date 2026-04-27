@@ -93,8 +93,11 @@ public class ScenarioService {
     private boolean checkCondition(Condition condition, SensorStateAvro sensorState) {
         Object data = sensorState.getData();
         int actualValue = extractValue(data);
-        int expectedValue = condition.getValue();
+        Integer expectedValue = condition.getValue();
 
+        if (expectedValue == null) {
+            return true; // Условие без значения - всегда выполнено
+        }
         return switch (condition.getOperation()) {
             case "EQUALS" -> actualValue == expectedValue;
             case "GREATER_THAN" -> actualValue > expectedValue;
@@ -104,6 +107,7 @@ public class ScenarioService {
     }
 
     private int extractValue(Object data) {
+
         if (data instanceof TemperatureSensorAvro temp) {
             return temp.getTemperatureC();
         } else if (data instanceof LightSensorAvro light) {
@@ -136,8 +140,8 @@ public class ScenarioService {
     }
     private Integer extractIntValue(Object value) {
         if (value == null) {
-            log.warn("Value is null for condition, using default 0");
-            return 0;  // ← ИЗМЕНЕНИЕ: возвращаем 0 вместо null
+            log.debug("Value is null for condition, will be saved as NULL");
+            return null;  // ← ИЗМЕНЕНИЕ: возвращаем 0 вместо null
         }
 
         switch (value) {
@@ -149,7 +153,7 @@ public class ScenarioService {
             }
             default -> {
                 log.warn("Неизвестный тип значения: {}, используем 0", value.getClass());
-                return 0;  // ← ИЗМЕНЕНИЕ: возвращаем 0 вместо null
+                return null;
             }
         }
     }

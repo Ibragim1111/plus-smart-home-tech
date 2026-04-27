@@ -30,10 +30,7 @@ public class SensorEventProducer {
         SensorEventAvro.Builder builder = SensorEventAvro.newBuilder()
                 .setId(proto.getId())
                 .setHubId(proto.getHubId())
-                .setTimestamp(Instant.ofEpochSecond(
-                        proto.getTimestamp().getSeconds(),
-                        proto.getTimestamp().getNanos()
-                ));
+                .setTimestampMs(convertTimestampInstant(proto.getTimestamp()));
         switch (proto.getPayloadCase()) {
             case LIGHT_SENSOR:
                 LightSensorAvro light = LightSensorAvro.newBuilder()
@@ -85,5 +82,11 @@ public class SensorEventProducer {
 
     private long convertTimestamp(Timestamp timestamp) {
         return timestamp.getSeconds() * 1000 + timestamp.getNanos() / 1000000;
+    }
+    private Instant convertTimestampInstant(Timestamp timestamp) {
+        return Instant.ofEpochSecond(
+                timestamp.getSeconds(),
+                timestamp.getNanos()
+        );
     }
 }

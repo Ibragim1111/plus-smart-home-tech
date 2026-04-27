@@ -24,5 +24,7 @@ public class Condition {
     private String sensorId;
     private String type;
     private String operation;
+    @Column(nullable = true)
     private Integer value;
+
 }

@@ -21,7 +21,7 @@ public class AggregationService {
         String hubId = event.getHubId();
         String sensorId = event.getId();
 
-        log.debug("Обработка события: hubId={}, sensorId={}, timestamp={}", hubId, sensorId, event.getTimestamp());
+        log.debug("Обработка события: hubId={}, sensorId={}, timestamp={}", hubId, sensorId, event.getTimestampMs());
 
         // 1. Получаем или создаем снапшот для хаба
         SensorsSnapshotAvro snapshot = snapshots.get(hubId);
@@ -29,7 +29,7 @@ public class AggregationService {
             log.info("Создаем новый снапшот для хаба: {}", hubId);
             snapshot = SensorsSnapshotAvro.newBuilder()
                     .setHubId(hubId)
-                    .setTimestamp(event.getTimestamp())
+                    .setTimestampMs(event.getTimestampMs())
                     .setSensorsState(new HashMap<>())
                     .build();
         }
@@ -38,7 +38,7 @@ public class AggregationService {
         SensorStateAvro oldState = sensorsState.get(sensorId);
 
         // 2. Если данные не изменились - ничего не делаем
-        if (oldState != null && oldState.getTimestamp().isAfter(event.getTimestamp())) {
+        if (oldState != null && oldState.getTimestampMs().isAfter(event.getTimestampMs())) {
             log.debug("Данные датчика {} не изменились или устарели", sensorId);
             return Optional.empty();
         }
@@ -46,7 +46,7 @@ public class AggregationService {
 
         // 3. Создаем новое состояние датчика
         SensorStateAvro newState = SensorStateAvro.newBuilder()
-                .setTimestamp(event.getTimestamp())
+                .setTimestampMs(event.getTimestampMs())
                 .setData(event.getPayload())
                 .build();
 
@@ -54,7 +54,7 @@ public class AggregationService {
         if (oldState != null && oldState.getData().equals(event.getPayload())) {
             log.debug("Данные датчика {} не изменились (но timestamp новее)", sensorId);
             sensorsState.put(sensorId, newState);
-            snapshot.setTimestamp(event.getTimestamp());
+            snapshot.setTimestampMs(event.getTimestampMs());
             snapshots.put(hubId, snapshot);
             return Optional.of(snapshot);
         }
@@ -62,7 +62,7 @@ public class AggregationService {
         // 5. Обновляем снапшот
         log.info("Обновляем датчик {} в хабе {}", sensorId, hubId);
         sensorsState.put(sensorId, newState);
-        snapshot.setTimestamp(event.getTimestamp());
+        snapshot.setTimestampMs(event.getTimestampMs());
         snapshots.put(hubId, snapshot);
 
         return Optional.of(snapshot);
