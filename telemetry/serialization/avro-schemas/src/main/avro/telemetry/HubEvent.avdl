@@ -1,75 +1,65 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol HubEventProtocol {
-enum DeviceTypeAvro {
-        MOTION_SENSOR,
-        TEMPERATURE_SENSOR,
-        LIGHT_SENSOR,
-        CLIMATE_SENSOR,
-        SWITCH_SENSOR
-    }
+	enum DeviceTypeAvro {
+		MOTION_SENSOR,
+		TEMPERATURE_SENSOR,
+		LIGHT_SENSOR,
+		CLIMATE_SENSOR,
+		SWITCH_SENSOR
+	}
 
-    enum ConditionTypeAvro {
-        MOTION,
-        LUMINOSITY,
-        SWITCH,
-        TEMPERATURE,
-        CO2LEVEL,
-        HUMIDITY
-    }
+	record DeviceAddedAvro {
+		string id;
+		DeviceTypeAvro deviceType;
+	}
 
-    enum ConditionOperationAvro {
-        EQUALS,
-        GREATER_THAN,
-        LOWER_THAN
-    }
+	record DeviceRemovedAvro {
+		string id;
+	}
 
-    enum ActionTypeAvro {
-        ACTIVATE,
-        DEACTIVATE,
-        INVERSE,
-        SET_VALUE
-    }
+	enum ConditionTypeAvro {
+		MOTION, LUMINOSITY, SWITCH, TEMPERATURE, CO2LEVEL, HUMIDITY
+	}
 
-    record DeviceAddedEventAvro {
-        string id;
-        DeviceTypeAvro type;
-    }
+	enum ConditionOperationAvro {
+		EQUALS, GREATER_THAN, LOWER_THAN
+	}
 
-    record DeviceRemovedEventAvro {
-        string id;
-    }
+	record ScenarioConditionAvro {
+		string sensorId;
+		ConditionTypeAvro type;
+		ConditionOperationAvro operation;
+		int value;
+	}
 
-    record ScenarioConditionAvro {
-        string sensor_id;
-        ConditionTypeAvro type;
-        ConditionOperationAvro operation;
-        union { null, int, boolean } value = null;
-    }
+	enum ActionTypeAvro {
+		ACTIVATE, DEACTIVATE, INVERSE, SET_VALUE
+	}
 
-    record DeviceActionAvro {
-        string sensor_id;
-        ActionTypeAvro type;
-        union { null, int } value = null;
-    }
+	record DeviceActionAvro {
+		string sensorId;
+		ActionTypeAvro type;
+		int value;
+	}
 
-    record ScenarioAddedEventAvro {
-        string name;
-        array<ScenarioConditionAvro> conditions;
-        array<DeviceActionAvro> actions;
-    }
+	record ScenarioAddedAvro {
+		string name;
+		array<ScenarioConditionAvro> conditions;
+		array<DeviceActionAvro> actions;
+	}
 
-    record ScenarioRemovedEventAvro {
-        string name;
-    }
+	record ScenarioRemovedAvro {
+		string name;
+	}
 
-    record HubEventAvro {
-        string hub_id;
-        @logicalType("timestamp-millis") long timestamp;
-        union {
-            DeviceAddedEventAvro,
-            DeviceRemovedEventAvro,
-            ScenarioAddedEventAvro,
-            ScenarioRemovedEventAvro
-        } payload;
-    }
+	record HubEventAvro {
+		string hubId;
+		timestamp_ms timestamp;
+		union {
+			DeviceAddedAvro,
+			DeviceRemovedAvro,
+			ScenarioAddedAvro,
+			ScenarioRemovedAvro
+		} payload;
+	}
 }

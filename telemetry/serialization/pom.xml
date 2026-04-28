@@ -14,10 +14,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>avro-schemas</module>
-        <module>proto-schemas</module>
+
 
         <module>common</module>
+        <module>proto-schemas</module>
+        <module>avro-schemas</module>
     </modules>
 
 </project>

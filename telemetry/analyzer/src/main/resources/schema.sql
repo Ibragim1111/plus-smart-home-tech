@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS scenarios (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    hub_id VARCHAR,
+    name VARCHAR,
+    UNIQUE(hub_id, name)
+);
+
+CREATE TABLE IF NOT EXISTS devices (
+    id VARCHAR PRIMARY KEY,
+    hub_id VARCHAR
+);
+
+CREATE TABLE IF NOT EXISTS conditions (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type VARCHAR,
+    operation VARCHAR,
+    value INTEGER,
+    sensor_id VARCHAR REFERENCES devices(id) ON DELETE CASCADE,
+    scenario_id BIGINT REFERENCES scenarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS deviceActions (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    type VARCHAR,
+    value INTEGER,
+    scenario_id BIGINT REFERENCES scenarios(id),
+    device_id VARCHAR REFERENCES devices(id) ON DELETE CASCADE,
+);

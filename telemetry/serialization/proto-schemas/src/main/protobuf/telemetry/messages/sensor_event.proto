@@ -1,49 +1,16 @@
 syntax = "proto3";
 
-package telemetry.messages;
-
-option java_package = "ru.yandex.practicum.grpc.telemetry.collector";
-option java_multiple_files = true;
+package telemetry.messages.event;
 
 import "google/protobuf/timestamp.proto";
 
-// Датчик движения
-message MotionSensorEvent {
-  int32 link_quality = 1;
-  bool motion = 2;
-  int32 voltage = 3;
-}
+option java_multiple_files = true;
+option java_package = "ru.yandex.practicum.grpc.telemetry.event";
 
-// Датчик температуры
-message TemperatureSensorEvent {
-  int32 temperature_c = 1;
-  int32 temperature_f = 2;
-}
-
-// Датчик освещенности
-message LightSensorEvent {
-  int32 link_quality = 1;
-  int32 luminosity = 2;
-}
-
-// Климатический датчик
-message ClimateSensorEvent {
-  int32 temperature_c = 1;
-  int32 humidity = 2;
-  int32 co2_level = 3;
-}
-
-// Переключатель (вкл/выкл)
-message SwitchSensorEvent {
-  bool state = 1;
-}
-
-// Основное сообщение события датчика
 message SensorEventProto {
   string id = 1;
-  string hub_id = 2;
-  google.protobuf.Timestamp timestamp = 3;
-
+  google.protobuf.Timestamp timestamp = 2;
+  string hubId = 3;
   oneof payload {
     MotionSensorEvent motion_sensor = 4;
     TemperatureSensorEvent temperature_sensor = 5;
@@ -51,4 +18,30 @@ message SensorEventProto {
     ClimateSensorEvent climate_sensor = 7;
     SwitchSensorEvent switch_sensor = 8;
   }
+}
+
+message MotionSensorEvent {
+  int32 link_quality = 1;
+  bool motion = 2;
+  int32 voltage = 3;
+}
+
+message TemperatureSensorEvent {
+  int32 temperature_c = 1;
+  int32 temperature_f = 2;
+}
+
+message LightSensorEvent {
+  int32 link_quality = 1;
+  int32 luminosity = 2;
+}
+
+message ClimateSensorEvent {
+  int32 temperature_c = 1;
+  int32 humidity = 2;
+  int32 co2_level = 3;
+}
+
+message SwitchSensorEvent {
+  bool state = 1;
 }

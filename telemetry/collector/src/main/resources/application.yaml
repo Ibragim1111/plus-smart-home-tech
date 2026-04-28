@@ -1,0 +1,11 @@
+server:
+  port: 8081
+grpc:
+  server:
+    port: 9090
+kafka:
+  topic:
+    hub: telemetry.hubs.v1
+    sensor: telemetry.sensors.v1
+  bootstrap:
+    server: localhost:9092
