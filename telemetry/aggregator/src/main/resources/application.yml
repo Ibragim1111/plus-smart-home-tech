@@ -1,0 +1,38 @@
+grpc:
+  server:
+    port: 59091
+    reflection-service-enabled: true
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
+
+
+logging:
+  level:
+    #    io.grpc: DEBUG
+    #    net.devh.boot.grpc: DEBUG
+    ru:
+      yandex:
+        practicum:
+          telemetry:
+            aggregator:
+              DEBUG
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%thread] %logger{36} : %msg%n"
+
+kafka:
+  bootstrap-servers: localhost:9092
+
+  consumer:
+    group-id: sensor-aggregator-group
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: deserializer.SensorEventDeserializer
+
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: serializer.AvroSerializer

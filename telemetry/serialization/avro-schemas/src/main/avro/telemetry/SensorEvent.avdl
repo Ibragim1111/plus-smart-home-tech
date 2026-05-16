@@ -1,4 +1,85 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol SensorEventProtocol {
 
+    /**
+     * Запись, представляющая данные с климатического датчика
+     */
+    record ClimateSensorAvro {
+        /** температура в градусах Цельсия */
+        int temperature_c;
+        /** уровень влажности */
+        int humidity;
+        /** уровень углекислого газа */
+        int co2_level;
+    }
+
+    /**
+     * Запись, представляющая данные с датчика света
+     */
+    record LightSensorAvro {
+        /** качество сигнала связи */
+        int link_quality;
+        /** уровень освещённости */
+        int luminosity;
+    }
+
+    /**
+     * Запись, предоставляющая данные с датчика движения
+     */
+    record MotionSensorAvro {
+        /** качество сигнала связи */
+        int link_quality;
+        /** обнаружено ли движение */
+        boolean motion;
+        /** уровень напряжения */
+        int voltage;
+    }
+
+    /**
+     * Запись, представляющая данные с датчика переключателя
+     */
+    record SwitchSensorAvro {
+        /** текущее состояние переключателя (включено/выключено) */
+        boolean state;
+    }
+
+    /**
+     * Запись, представляющая данные с датчика температуры
+     */
+    record TemperatureSensorAvro {
+        /** идентификатор датчика */
+        string id;
+        /** идентификатор хаба, к которому подключён датчик */
+        string hubId;
+        /** метка времени, указывающая, когда произошло событие телеметрии */
+        timestamp_ms timestamp;
+        /** температура в градусах Цельсия */
+        int temperature_c;
+        /** температура в градусах Фаренгейта */
+        int temperature_f;
+    }
+
+    /**
+     * Запись, представляющая данные события, связанного с сенсором
+     */
+    record SensorEventAvro {
+        /** идентификатор сенсора */
+        string id;
+        /** идентификатор хаба, к которому подключён сенсор */
+        string hubId;
+        /** метка времени, указывающая, когда произошло событие телеметрии */
+        timestamp_ms timestamp;
+        /**
+         * данные события, представленные одной из записей:
+         * ClimateSensorAvro, LightSensorAvro, MotionSensorAvro,
+         * SwitchSensorAvro, TemperatureSensorAvro
+         */
+        union {
+            ClimateSensorAvro,
+            LightSensorAvro,
+            MotionSensorAvro,
+            SwitchSensorAvro,
+            TemperatureSensorAvro
+        } payload;
+    }
 }
