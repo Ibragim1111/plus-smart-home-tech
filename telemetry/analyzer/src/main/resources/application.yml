@@ -1,29 +1,24 @@
 spring:
-  application:
-    name: analyzer
-
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: analyzer-snapshot-group
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/smart_home
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
-    password: postgres
+    password: password
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 
 grpc:
+  server:
+    port: 59091
+    reflection-service-enabled: true
   client:
     hub-router:
       address: 'static://localhost:59090'
@@ -31,13 +26,23 @@ grpc:
       keepAliveWithoutCalls: true
       negotiationType: plaintext
 
-app:
-  kafka:
-    topics:
-      snapshots: telemetry.snapshots.v1
-      hubs: telemetry.hubs.v1
-
 logging:
   level:
-    ru.yandex.practicum: DEBUG
-    org.hibernate.SQL: WARN
+    #    io.grpc: DEBUG
+    #    net.devh.boot.grpc: DEBUG
+    ru:
+      yandex:
+        practicum:
+          telemetry:
+            analyzer:
+              DEBUG
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- [%thread] %logger{36} : %msg%n"
+
+kafka:
+  bootstrap-servers: localhost:9092
+
+  consumer:
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
